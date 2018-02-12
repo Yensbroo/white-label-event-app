@@ -34,7 +34,7 @@ const DetailScreen = ({ navigation: { state: { params }, navigate }, screenProps
         </View>
       </Card>
       <View>
-        <Badge containerStyle={{ margin: 32 }}>
+        <Badge containerStyle={{ margin: 30 }}>
           <Text style={{ color: '#FFFFFF' }}>{`Attendees:${users.length}`}</Text>
         </Badge>
         {userId ? (

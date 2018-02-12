@@ -17,17 +17,28 @@ const styles = StyleSheet.create({
     paddingRight: 60,
     paddingBottom: 60,
   },
+  button: {
+    marginBottom: 10,
+    width: 200,
+  },
+  facebookLogin: {
+    backgroundColor: '#4468B0',
+  },
 });
 
 class UserScreen extends Component {
   renderLoginButton() {
-    const { login } = this.props.screenProps;
+    const prop = this.props.screenProps;
+    const { fbLogin } = prop;
+    const { googleLogin } = prop;
+
     return (
       <View style={styles.container}>
         <Text style={styles.whiteText}>
           Have a great day at Shift! Please login to subscribe for talks & sessions troughout the day.
         </Text>
-        <Button title="Login" onPress={() => login()} />
+        <Button title="Login with Facebook"  style={styles.button} onPress={() => fbLogin()} />
+        <Button title="Login with Google" style={styles.button} onPress={() => googleLogin()}/>
       </View>
     );
   }
@@ -50,6 +61,7 @@ class UserScreen extends Component {
 
   render() {
     const { userInfo } = this.props.screenProps;
+    console.log(userInfo);
     if (!userInfo.id) {
       return this.renderLoginButton();
     }

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { StackNavigator } from 'react-navigation';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { HomeScreen, DetailScreen, UserScreen } from './screens';
 import { initializeFirebase, subscribeToTrack, listenFirebaseChanges } from './utils/firebaseService';
-import { handleUserLogin } from './utils/authenticationService';
+import { handleUserLogin, handleGoogleLogin } from './utils/authenticationService';
 import getShiftData from './utils/shiftService';
 
 const Navigator = StackNavigator({
@@ -16,6 +16,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  loading: {
+    marginBottom: 250,
+    marginTop: 200,
+  }
 });
 
 export default class App extends Component {
@@ -25,6 +29,7 @@ export default class App extends Component {
     this.firebaseRefs = {};
     this.state = {
       shiftData: [],
+      isLoading: true,
       userInfo: {},
       usersPerSchedule: {},
     };
@@ -34,7 +39,7 @@ export default class App extends Component {
     initializeFirebase();
     getShiftData()
       .then((response) => {
-        this.setState({ shiftData: response.data });
+        this.setState({ shiftData: response.data, isLoading: false });
         return response.data;
       })
       .then((shiftData) => {
@@ -62,15 +67,21 @@ export default class App extends Component {
     this.setState({ userInfo });
   };
 
+  handleGoogleLogin = async () => {
+    const userInfo = await handleGoogleLogin();
+    this.setState({ userInfo });
+  }
+
   render() {
-    const { userInfo } = this.state;
+    const { userInfo, isLoading } = this.state;
     return (
       <View style={styles.container}>
         <Navigator
           screenProps={{
             shiftData: this.state.shiftData,
             userInfo,
-            login: () => this.handleUserLogin(),
+            fbLogin: () => this.handleUserLogin(),
+            googleLogin: () => this.handleGoogleLogin(),
             onChangeSubscription: trackId =>
               subscribeToTrack({
                 trackId,
@@ -81,6 +92,9 @@ export default class App extends Component {
             usersPerSchedule: this.state.usersPerSchedule,
           }}
         />
+        {isLoading && (
+          <ActivityIndicator style={styles.loading} size="large" color="#000000" />
+        )}
       </View>
     );
   }
